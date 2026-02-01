@@ -1,0 +1,238 @@
+/**
+ * Content Script Styles
+ * 
+ * These styles are injected into ChatGPT pages for the Picker component.
+ * Uses CSS custom properties for theming (light/dark mode).
+ */
+
+/* Reset and isolation for our container */
+#gptprompt-root {
+  /* Ensure our styles don't leak and page styles don't affect us */
+  all: initial;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999999;
+  pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+}
+
+#gptprompt-root * {
+  box-sizing: border-box;
+}
+
+/* CSS Custom Properties for theming */
+#gptprompt-root {
+  /* Light mode (default) */
+  --gpt-bg-primary: #ffffff;
+  --gpt-bg-secondary: #f7f7f8;
+  --gpt-bg-hover: #f0f0f0;
+  --gpt-bg-selected: #e5e5e5;
+  --gpt-text-primary: #1a1a1a;
+  --gpt-text-secondary: #666666;
+  --gpt-text-tertiary: #999999;
+  --gpt-border: #e5e5e5;
+  --gpt-accent: #10a37f;
+  --gpt-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Dark mode detection */
+@media (prefers-color-scheme: dark) {
+  #gptprompt-root {
+    --gpt-bg-primary: #343541;
+    --gpt-bg-secondary: #40414f;
+    --gpt-bg-hover: #4a4b57;
+    --gpt-bg-selected: #565869;
+    --gpt-text-primary: #ececf1;
+    --gpt-text-secondary: #c5c5d2;
+    --gpt-text-tertiary: #8e8ea0;
+    --gpt-border: #4a4b57;
+    --gpt-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Backdrop */
+.gptprompt-picker-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 15vh;
+  pointer-events: auto;
+  animation: gptprompt-fade-in 150ms ease-out;
+}
+
+/* Picker container */
+.gptprompt-picker-container {
+  width: 100%;
+  max-width: 560px;
+  animation: gptprompt-picker-enter 150ms ease-out;
+}
+
+/* Picker (cmdk) */
+.gptprompt-picker {
+  background-color: var(--gpt-bg-primary);
+  border-radius: 12px;
+  box-shadow: var(--gpt-shadow);
+  overflow: hidden;
+  border: 1px solid var(--gpt-border);
+}
+
+/* Search input */
+.gptprompt-picker-input {
+  width: 100%;
+  padding: 16px;
+  border: none;
+  border-bottom: 1px solid var(--gpt-border);
+  background-color: var(--gpt-bg-primary);
+  color: var(--gpt-text-primary);
+  font-size: 16px;
+  outline: none;
+}
+
+.gptprompt-picker-input::placeholder {
+  color: var(--gpt-text-tertiary);
+}
+
+/* List container */
+.gptprompt-picker-list {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+/* Group heading */
+.gptprompt-picker [cmdk-group-heading] {
+  padding: 8px 12px 4px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gpt-text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Individual item */
+.picker-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 100ms ease;
+}
+
+.picker-item[data-selected='true'],
+.picker-item[aria-selected='true'] {
+  background-color: var(--gpt-bg-selected);
+}
+
+.picker-item:hover {
+  background-color: var(--gpt-bg-hover);
+}
+
+/* Item icon */
+.picker-item-icon {
+  font-size: 16px;
+  line-height: 1;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+/* Item content */
+.picker-item-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.picker-item-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gpt-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.picker-item-description {
+  font-size: 12px;
+  color: var(--gpt-text-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+/* Empty state */
+.gptprompt-picker-empty {
+  padding: 24px;
+  text-align: center;
+  color: var(--gpt-text-secondary);
+  font-size: 14px;
+}
+
+/* Loading state */
+.gptprompt-picker-loading {
+  padding: 24px;
+  text-align: center;
+  color: var(--gpt-text-tertiary);
+  font-size: 14px;
+}
+
+/* Footer */
+.gptprompt-picker-footer {
+  display: flex;
+  gap: 16px;
+  padding: 10px 16px;
+  border-top: 1px solid var(--gpt-border);
+  background-color: var(--gpt-bg-secondary);
+  font-size: 12px;
+  color: var(--gpt-text-tertiary);
+}
+
+/* Animations */
+@keyframes gptprompt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes gptprompt-picker-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Scrollbar styling */
+.gptprompt-picker-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.gptprompt-picker-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.gptprompt-picker-list::-webkit-scrollbar-thumb {
+  background-color: var(--gpt-border);
+  border-radius: 4px;
+}
+
+.gptprompt-picker-list::-webkit-scrollbar-thumb:hover {
+  background-color: var(--gpt-text-tertiary);
+}
