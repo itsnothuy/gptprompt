@@ -52,8 +52,13 @@ npm run build
 # 1. Go to chrome://extensions/
 # 2. Enable "Developer mode"
 # 3. Click "Load unpacked"
-# 4. Select the `dist` folder
+# 4. Select the `dist` folder (NOT the root folder!)
 ```
+
+> **⚠️ Important**: Always load the **`dist`** folder, not the root project folder!  
+> Loading from the root will cause "Service worker registration failed" errors.  
+> See [LOADING-EXTENSION.md](LOADING-EXTENSION.md) for detailed instructions.
+
 
 ## Usage
 
@@ -73,12 +78,23 @@ npm run build
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action |
-|----------|--------|
-| `Cmd/Ctrl + J` | Open prompt picker |
-| `↑` / `↓` | Navigate prompts |
-| `Enter` | Insert selected prompt |
-| `Escape` | Close picker |
+#### Popup UI
+| Shortcut       | Action                 |
+| -------------- | ---------------------- |
+| `↑` / `↓` or `j` / `k` | Navigate prompts  |
+| `Enter`        | Open/select prompt     |
+| `/`            | Focus search           |
+| `Cmd/Ctrl + E` | Edit selected prompt   |
+| `Cmd/Ctrl + Del` | Delete selected prompt |
+| `Escape`       | Clear selection        |
+
+#### ChatGPT Page
+| Shortcut       | Action                 |
+| -------------- | ---------------------- |
+| `Cmd/Ctrl + J` | Open prompt picker     |
+| `↑` / `↓`      | Navigate prompts       |
+| `Enter`        | Insert selected prompt |
+| `Escape`       | Close picker           |
 
 ## Development
 
@@ -127,15 +143,15 @@ gptprompt/
 
 Comprehensive documentation is available in the [`docs/`](./docs) folder:
 
-| Document | Description |
-|----------|-------------|
-| [00-PROJECT-INDEX.md](./docs/00-PROJECT-INDEX.md) | Documentation overview |
-| [01-RESEARCH-ANALYSIS.md](./docs/01-RESEARCH-ANALYSIS.md) | Competitive analysis |
-| [02-PRODUCT-REQUIREMENTS.md](./docs/02-PRODUCT-REQUIREMENTS.md) | Product requirements |
-| [03-TECHNICAL-ARCHITECTURE.md](./docs/03-TECHNICAL-ARCHITECTURE.md) | System design |
-| [04-IMPLEMENTATION-PLAN.md](./docs/04-IMPLEMENTATION-PLAN.md) | Development roadmap |
-| [05-UI-UX-SPECIFICATION.md](./docs/05-UI-UX-SPECIFICATION.md) | UI/UX design specs |
-| [06-DEVELOPMENT-GUIDE.md](./docs/06-DEVELOPMENT-GUIDE.md) | Developer guide |
+| Document                                                            | Description            |
+| ------------------------------------------------------------------- | ---------------------- |
+| [00-PROJECT-INDEX.md](./docs/00-PROJECT-INDEX.md)                   | Documentation overview |
+| [01-RESEARCH-ANALYSIS.md](./docs/01-RESEARCH-ANALYSIS.md)           | Competitive analysis   |
+| [02-PRODUCT-REQUIREMENTS.md](./docs/02-PRODUCT-REQUIREMENTS.md)     | Product requirements   |
+| [03-TECHNICAL-ARCHITECTURE.md](./docs/03-TECHNICAL-ARCHITECTURE.md) | System design          |
+| [04-IMPLEMENTATION-PLAN.md](./docs/04-IMPLEMENTATION-PLAN.md)       | Development roadmap    |
+| [05-UI-UX-SPECIFICATION.md](./docs/05-UI-UX-SPECIFICATION.md)       | UI/UX design specs     |
+| [06-DEVELOPMENT-GUIDE.md](./docs/06-DEVELOPMENT-GUIDE.md)           | Developer guide        |
 
 ## Tech Stack
 
