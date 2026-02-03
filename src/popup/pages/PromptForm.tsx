@@ -1,6 +1,6 @@
 /**
  * PromptForm Page
- * Add/Edit prompt form
+ * Add/Edit prompt form with validation
  */
 
 import { useState, useEffect, useRef } from 'react';
@@ -8,25 +8,52 @@ import { storage } from '@/shared/storage';
 import { log } from '@/shared/utils';
 import type { Prompt, PromptInput } from '@/shared/types';
 import { Button, Input, Textarea } from '../components';
+import { useFormValidation, ValidationRules } from '../hooks/useFormValidation';
 
 interface PromptFormProps {
   prompt: Prompt | null;
   onBack: () => void;
-  onSave: () => void;
+  onSave: (isEdit: boolean) => void;
+  onError: (message: string) => void;
 }
 
-interface FormErrors {
-  title?: string;
-  content?: string;
+interface FormData {
+  title: string;
+  content: string;
+  description: string;
 }
 
-export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
-  const [title, setTitle] = useState(prompt?.title || '');
-  const [content, setContent] = useState(prompt?.content || '');
-  const [description, setDescription] = useState(prompt?.description || '');
-  const [errors, setErrors] = useState<FormErrors>({});
+const validationSchema = {
+  title: {
+    rules: [
+      ValidationRules.required('Title is required'),
+      ValidationRules.minLength(3, 'Title must be at least 3 characters'),
+      ValidationRules.maxLength(100, 'Title must not exceed 100 characters'),
+    ],
+  },
+  content: {
+    rules: [
+      ValidationRules.required('Content is required'),
+      ValidationRules.minLength(10, 'Content must be at least 10 characters'),
+      ValidationRules.maxLength(10000, 'Content must not exceed 10,000 characters'),
+    ],
+  },
+  description: {
+    rules: [
+      ValidationRules.maxLength(200, 'Description must not exceed 200 characters'),
+    ],
+  },
+};
+
+export function PromptForm({ prompt, onBack, onSave, onError }: PromptFormProps) {
+  const [formData, setFormData] = useState<FormData>({
+    title: prompt?.title || '',
+    content: prompt?.content || '',
+    description: prompt?.description || '',
+  });
   const [saving, setSaving] = useState(false);
 
+  const { errors, validateForm, clearError } = useFormValidation<FormData>(validationSchema);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
   // Focus title input on mount
@@ -34,27 +61,23 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
     titleInputRef.current?.focus();
   }, []);
 
-  // Validate form
-  const validate = (): boolean => {
-    const newErrors: FormErrors = {};
-
-    if (!title.trim()) {
-      newErrors.title = 'Title is required';
+  // Handle field changes
+  const handleChange = (field: keyof FormData) => (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    if (errors[field]) {
+      clearError(field);
     }
-
-    if (!content.trim()) {
-      newErrors.content = 'Content is required';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
   };
 
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!validate()) return;
+    if (!validateForm(formData)) {
+      return;
+    }
 
     setSaving(true);
 
@@ -63,26 +86,26 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
         // Update existing prompt
         await storage.updatePrompt({
           id: prompt.id,
-          title: title.trim(),
-          content: content.trim(),
-          description: description.trim() || undefined,
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          description: formData.description.trim() || undefined,
         });
         log.popup('Updated prompt:', prompt.id);
+        onSave(true);
       } else {
         // Create new prompt
         const input: PromptInput = {
-          title: title.trim(),
-          content: content.trim(),
-          description: description.trim() || undefined,
+          title: formData.title.trim(),
+          content: formData.content.trim(),
+          description: formData.description.trim() || undefined,
         };
         await storage.savePrompt(input);
         log.popup('Created new prompt');
+        onSave(false);
       }
-
-      onSave();
     } catch (error) {
       log.error('Failed to save prompt:', error);
-      setErrors({ title: 'Failed to save. Please try again.' });
+      onError('Failed to save prompt. Please try again.');
     } finally {
       setSaving(false);
     }
@@ -99,7 +122,7 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [title, content, description]);
+  }, [formData]);
 
   const isEditing = !!prompt;
 
@@ -121,8 +144,8 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
           ref={titleInputRef}
           label="Title"
           placeholder="Enter title..."
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={formData.title}
+          onChange={handleChange('title')}
           error={errors.title}
           required
           maxLength={100}
@@ -131,8 +154,8 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
         <Textarea
           label="Content"
           placeholder="Enter prompt content..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
+          value={formData.content}
+          onChange={handleChange('content')}
           error={errors.content}
           required
           rows={6}
@@ -142,8 +165,9 @@ export function PromptForm({ prompt, onBack, onSave }: PromptFormProps) {
         <Input
           label="Description"
           placeholder="Brief description (optional)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
+          value={formData.description}
+          onChange={handleChange('description')}
+          error={errors.description}
           maxLength={200}
         />
 

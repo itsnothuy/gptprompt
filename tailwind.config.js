@@ -30,6 +30,8 @@ export default {
         'picker-enter': 'picker-enter 150ms ease-out',
         'picker-exit': 'picker-exit 100ms ease-in',
         'fade-in': 'fade-in 150ms ease-out',
+        'slide-in-from-right-full': 'slide-in-from-right-full 200ms ease-out',
+        'pulse': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         'picker-enter': {
@@ -43,6 +45,14 @@ export default {
         'fade-in': {
           from: { opacity: '0' },
           to: { opacity: '1' },
+        },
+        'slide-in-from-right-full': {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        'pulse': {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
         },
       },
     },

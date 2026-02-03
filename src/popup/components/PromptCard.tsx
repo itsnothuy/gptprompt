@@ -5,14 +5,23 @@
 
 import type { Prompt } from '@/shared/types';
 import { truncate, formatRelativeTime } from '@/shared/utils';
+import { cn } from '@/shared/cn';
 
 interface PromptCardProps {
   prompt: Prompt;
   onEdit: (prompt: Prompt) => void;
   onDelete: (id: string) => void;
+  isSelected?: boolean;
+  dataIndex?: number;
 }
 
-export function PromptCard({ prompt, onEdit, onDelete }: PromptCardProps) {
+export function PromptCard({ 
+  prompt, 
+  onEdit, 
+  onDelete, 
+  isSelected = false,
+  dataIndex,
+}: PromptCardProps) {
   const handleClick = () => {
     onEdit(prompt);
   };
@@ -25,7 +34,11 @@ export function PromptCard({ prompt, onEdit, onDelete }: PromptCardProps) {
   };
 
   return (
-    <article className="prompt-card" onClick={handleClick}>
+    <article 
+      className={cn('prompt-card', isSelected && 'prompt-card-selected')}
+      onClick={handleClick}
+      data-index={dataIndex}
+    >
       <div className="prompt-card-header">
         <h3 className="prompt-card-title">{prompt.title}</h3>
         <button
