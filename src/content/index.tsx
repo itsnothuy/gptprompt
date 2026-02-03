@@ -14,6 +14,7 @@ import { insertText, isChatGPTPage } from './chatgpt-dom';
 import { onMessage } from '@/shared/messaging';
 import { log } from '@/shared/utils';
 import type { Prompt, Message, GenericResponse } from '@/shared/types';
+import './content.css';
 
 // Container ID for our UI
 const CONTAINER_ID = 'gptprompt-root';
